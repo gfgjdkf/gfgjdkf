@@ -1,1 +1,1 @@
-英文版正在开发The English version is under development.
+目前仅支持中文英文版Both Chinese and English are supported. The English version is now available.
