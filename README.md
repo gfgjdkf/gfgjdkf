@@ -149,3 +149,52 @@ openssl x509 -in <(openssl pkcs12 -in my.p12 -passin pass:android -nokeys -clcer
 ## 版本
 - v1.2 包名 `com.htmitoapk.A`
 - 中英双语（跟随系统语言，也可在标题栏手动切换）
+
+
+版本二:
+# HTML2APK · 手机端 HTML → APK 转换器
+
+一个不需要电脑的安卓应用：在手机上选一个 HTML 文件，直接打包成一个可安装的 APK。
+整个打包链路（二进制清单编码、ZIP 组装、v1/v2/v3 签名）全部是纯 Java，全程离线，不依赖 aapt2 / d8 / 服务器 / 网络。
+
+## 功能
+
+- 选择 HTML 文件，填写应用名和包名，一键生成 APK 并直接安装
+- 中英双语，跟随系统语言，也可在标题栏手动切换
+- 生成的应用无需联网即可打开（HTML 内置在 APK 中）
+- 不依赖 Gradle / Android SDK，手机端完成打包和签名
+
+## 安全说明
+
+本工程不包含任何私钥：
+
+- 工具运行时按包名为每个应用生成独立的 RSA 2048 密钥和自签名证书，保存在应用私有目录
+- 同一包名复用同一套密钥，重新生成仍可覆盖升级
+- 不同包名、不同设备互不影响
+- 构建本工具自身 APK 的签名密钥由构建者本地生成，不随仓库分发
+
+## 构建
+
+需要 JDK 17 与 Android build-tools 34 + platform 34：
+
+```bash
+export JDK=/path/to/jdk-17
+export SDK=/path/to/android-sdk
+bash tools/build.sh
+# 产物：build/HTML2APK.apk
+```
+
+首次运行会自动生成构建签名密钥到 `keys/`（已加入 .gitignore）。
+也可以设置 `KS_PATH` / `KS_ALIAS` / `KS_PASS` 使用自己的密钥。
+
+## 已知限制
+
+1. 生成的应用没有自定义图标（手机端无法生成 resources.arsc）
+2. 同一包名的覆盖升级依赖本机保存的签名密钥，清除应用数据后需先卸载旧版
+3. 网页通过 file:// 加载，请求远程接口会遇到跨域限制
+4. 本应用自身的包名含大写 A，应用商店通常要求全小写
+
+## 许可
+
+MIT License，见 [LICENSE](LICENSE)。
+`libs/apksigner.jar` 来自 Android Open Source Project，使用 Apache License 2.0。
